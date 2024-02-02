@@ -685,7 +685,7 @@ test('Lambda3', () => {
 test('Lambda4', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['lambda4.py']);
 
-    TestUtils.validateResults(analysisResults, 1);
+    TestUtils.validateResults(analysisResults, 2);
 });
 
 test('Lambda5', () => {
@@ -789,7 +789,7 @@ test('Call5', () => {
 test('Call6', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['call6.py']);
 
-    TestUtils.validateResults(analysisResults, 2);
+    TestUtils.validateResults(analysisResults, 4);
 });
 
 test('Call7', () => {
@@ -1270,13 +1270,13 @@ test('Optional2', () => {
 test('Tuple1', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['tuple1.py']);
 
-    TestUtils.validateResults(analysisResults, 15);
+    TestUtils.validateResults(analysisResults, 22);
 });
 
 test('Tuple2', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['tuple2.py']);
 
-    TestUtils.validateResults(analysisResults, 3);
+    TestUtils.validateResults(analysisResults, 5);
 });
 
 test('Tuple3', () => {
@@ -1582,7 +1582,7 @@ test('TotalOrdering1', () => {
 test('TupleUnpack1', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['tupleUnpack1.py']);
 
-    TestUtils.validateResults(analysisResults, 6);
+    TestUtils.validateResults(analysisResults, 5);
 });
 
 test('TupleUnpack2', () => {
@@ -1590,11 +1590,11 @@ test('TupleUnpack2', () => {
 
     configOptions.defaultPythonVersion = PythonVersion.V3_10;
     const analysisResults1 = TestUtils.typeAnalyzeSampleFiles(['tupleUnpack2.py'], configOptions);
-    TestUtils.validateResults(analysisResults1, 19);
+    TestUtils.validateResults(analysisResults1, 18);
 
     configOptions.defaultPythonVersion = PythonVersion.V3_11;
     const analysisResults2 = TestUtils.typeAnalyzeSampleFiles(['tupleUnpack2.py'], configOptions);
-    TestUtils.validateResults(analysisResults2, 5);
+    TestUtils.validateResults(analysisResults2, 4);
 });
 
 test('TupleUnpack3', () => {
@@ -1726,5 +1726,5 @@ test('SpecialForm3', () => {
 test('SpecialForm4', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['specialForm4.py']);
 
-    TestUtils.validateResults(analysisResults, 69);
+    TestUtils.validateResults(analysisResults, 72);
 });

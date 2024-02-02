@@ -136,6 +136,10 @@ export const enum MemberAccessFlags {
     // (__getattr__, etc.) may provide the missing attribute type.
     // This disables this check.
     SkipAttributeAccessOverride = 1 << 9,
+
+    // Report an error if a symbol is an instance variable whose
+    // type is parameterized by a class TypeVar.
+    DisallowGenericInstanceVariableAccess = 1 << 10,
 }
 
 export const enum ClassIteratorFlags {
@@ -240,7 +244,6 @@ export const enum AssignTypeFlags {
 export interface ApplyTypeVarOptions {
     unknownIfNotFound?: boolean;
     unknownExemptTypeVars?: TypeVarType[];
-    useUnknownOverDefault?: boolean;
     useNarrowBoundOnly?: boolean;
     eliminateUnsolvedInUnions?: boolean;
     typeClassType?: Type;
@@ -545,12 +548,16 @@ export function cleanIncompleteUnknown(type: Type, recursionCount = 0): Type {
             let typeChanged = false;
 
             if (subtype.tupleTypeArguments) {
-                const updatedTupleTypeArgs = subtype.tupleTypeArguments.map((tupleTypeArg) => {
+                const updatedTupleTypeArgs: TupleTypeArgument[] = subtype.tupleTypeArguments.map((tupleTypeArg) => {
                     const newTypeArg = cleanIncompleteUnknown(tupleTypeArg.type, recursionCount);
                     if (newTypeArg !== tupleTypeArg.type) {
                         typeChanged = true;
                     }
-                    return { type: newTypeArg, isUnbounded: tupleTypeArg.isUnbounded };
+                    return {
+                        type: newTypeArg,
+                        isUnbounded: tupleTypeArg.isUnbounded,
+                        isOptional: tupleTypeArg.isOptional,
+                    };
                 });
 
                 if (typeChanged) {
@@ -1450,7 +1457,11 @@ export function applySourceContextTypeVarsToSignature(
             destSignature.setTupleTypeVar(
                 entry.typeVar,
                 entry.tupleTypes.map((arg) => {
-                    return { isUnbounded: arg.isUnbounded, type: applySolvedTypeVars(arg.type, srcContext) };
+                    return {
+                        type: applySolvedTypeVars(arg.type, srcContext),
+                        isUnbounded: arg.isUnbounded,
+                        isOptional: arg.isOptional,
+                    };
                 })
             );
         }
@@ -1487,8 +1498,9 @@ export function applyInScopePlaceholders(typeVarContext: TypeVarContext) {
                         entry.typeVar,
                         entry.tupleTypes.map((arg) => {
                             return {
-                                isUnbounded: arg.isUnbounded,
                                 type: applyInScopePlaceholdersToType(arg.type, signature),
+                                isUnbounded: arg.isUnbounded,
+                                isOptional: arg.isOptional,
                             };
                         })
                     );
@@ -2791,7 +2803,7 @@ export function specializeTupleClass(
     isTypeArgumentExplicit = true,
     isUnpackedTuple = false
 ): ClassType {
-    let combinedTupleType = combineTypes(
+    const combinedTupleType = combineTypes(
         typeArgs.map((t) => {
             if (isTypeVar(t.type) && isUnpackedVariadicTypeVar(t.type)) {
                 // Treat the unpacked TypeVarTuple as a union.
@@ -2801,11 +2813,6 @@ export function specializeTupleClass(
             return t.type;
         })
     );
-
-    // An empty tuple has an effective type of Any.
-    if (isNever(combinedTupleType)) {
-        combinedTupleType = AnyType.create();
-    }
 
     const clonedClassType = ClassType.cloneForSpecialization(
         classType,
@@ -3701,7 +3708,11 @@ class TypeVarTransformer {
                     ) {
                         appendArray(newTupleTypeArgs!, newTypeArgType.tupleTypeArguments);
                     } else {
-                        newTupleTypeArgs!.push({ type: newTypeArgType, isUnbounded: oldTypeArgType.isUnbounded });
+                        newTupleTypeArgs!.push({
+                            type: newTypeArgType,
+                            isUnbounded: oldTypeArgType.isUnbounded,
+                            isOptional: oldTypeArgType.isOptional,
+                        });
                     }
                 });
             } else if (typeParams.length > 0) {
@@ -4171,7 +4182,13 @@ class ApplySolvedTypeVarsTransformer extends TypeVarTransformer {
                     // now with default type arguments.
                     if (this._options.unknownIfNotFound) {
                         replacement = mapSubtypes(replacement, (subtype) => {
-                            if (isClassInstance(subtype) && !subtype.includeSubclasses) {
+                            if (isClassInstance(subtype)) {
+                                // If the includeSubclasses wasn't set, force it to be set by
+                                // converting to/from an instantiable.
+                                if (!subtype.includeSubclasses) {
+                                    subtype = ClassType.cloneAsInstance(ClassType.cloneAsInstantiable(subtype));
+                                }
+
                                 return specializeWithDefaultTypeArgs(subtype);
                             }
 
@@ -4208,7 +4225,7 @@ class ApplySolvedTypeVarsTransformer extends TypeVarTransformer {
 
             if (useDefaultOrUnknown) {
                 // Use the default value if there is one.
-                if (typeVar.details.defaultType && !this._options.useUnknownOverDefault) {
+                if (typeVar.details.defaultType) {
                     return this._solveDefaultType(typeVar.details.defaultType, recursionCount);
                 }
 

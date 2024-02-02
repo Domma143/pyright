@@ -429,6 +429,7 @@ export namespace Localizer {
         export const duplicateStarStarPattern = () => getRawString('Diagnostic.duplicateStarStarPattern');
         export const duplicatePositionOnly = () => getRawString('Diagnostic.duplicatePositionOnly');
         export const duplicateUnpack = () => getRawString('Diagnostic.duplicateUnpack');
+        export const ellipsisAfterUnpacked = () => getRawString('Diagnostic.ellipsisAfterUnpacked');
         export const ellipsisContext = () => getRawString('Diagnostic.ellipsisContext');
         export const ellipsisSecondArg = () => getRawString('Diagnostic.ellipsisSecondArg');
         export const enumClassOverride = () =>
@@ -531,6 +532,7 @@ export namespace Localizer {
         export const genericBaseClassNotAllowed = () => getRawString('Diagnostic.genericBaseClassNotAllowed');
         export const genericClassAssigned = () => getRawString('Diagnostic.genericClassAssigned');
         export const genericClassDeleted = () => getRawString('Diagnostic.genericClassDeleted');
+        export const genericInstanceVariableAccess = () => getRawString('Diagnostic.genericInstanceVariableAccess');
         export const genericNotAllowed = () => getRawString('Diagnostic.genericNotAllowed');
         export const genericTypeAliasBoundTypeVar = () =>
             new ParameterizedString<{ names: string }>(getRawString('Diagnostic.genericTypeAliasBoundTypeVar'));
@@ -1157,6 +1159,7 @@ export namespace Localizer {
     }
 
     export namespace DiagnosticAddendum {
+        export const annotatedNotAllowed = () => getRawString('DiagnosticAddendum.annotatedNotAllowed');
         export const argParam = () =>
             new ParameterizedString<{ paramName: string }>(getRawString('DiagnosticAddendum.argParam'));
         export const argParamFunction = () =>
@@ -1420,11 +1423,19 @@ export namespace Localizer {
             new ParameterizedString<{ entry: number }>(getRawString('DiagnosticAddendum.tupleEntryTypeMismatch'));
         export const tupleAssignmentMismatch = () =>
             new ParameterizedString<{ type: string }>(getRawString('DiagnosticAddendum.tupleAssignmentMismatch'));
-        export const tupleSizeIndeterminate = () =>
-            new ParameterizedString<{ expected: number }>(getRawString('DiagnosticAddendum.tupleSizeIndeterminate'));
+        export const tupleSizeIndeterminateSrc = () =>
+            new ParameterizedString<{ expected: number }>(getRawString('DiagnosticAddendum.tupleSizeIndeterminateSrc'));
+        export const tupleSizeIndeterminateSrcDest = () =>
+            new ParameterizedString<{ expected: number }>(
+                getRawString('DiagnosticAddendum.tupleSizeIndeterminateSrcDest')
+            );
         export const tupleSizeMismatch = () =>
             new ParameterizedString<{ expected: number; received: number }>(
                 getRawString('DiagnosticAddendum.tupleSizeMismatch')
+            );
+        export const tupleSizeMismatchIndeterminateDest = () =>
+            new ParameterizedString<{ expected: number; received: number }>(
+                getRawString('DiagnosticAddendum.tupleSizeMismatchIndeterminateDest')
             );
         export const typeAliasInstanceCheck = () => getRawString('DiagnosticAddendum.typeAliasInstanceCheck');
         export const typeAssignmentMismatch = () =>

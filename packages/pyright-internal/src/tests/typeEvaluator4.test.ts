@@ -367,7 +367,7 @@ test('Final2', () => {
 
 test('Final3', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['final3.py']);
-    TestUtils.validateResults(analysisResults, 28);
+    TestUtils.validateResults(analysisResults, 30);
 });
 
 test('Final4', () => {
@@ -448,7 +448,7 @@ test('FString5', () => {
 
 test('MemberAccess1', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['memberAccess1.py']);
-    TestUtils.validateResults(analysisResults, 0);
+    TestUtils.validateResults(analysisResults, 5);
 });
 
 test('MemberAccess2', () => {
@@ -1185,7 +1185,7 @@ test('TypeVar7', () => {
 test('TypeVar8', () => {
     const analysisResults = TestUtils.typeAnalyzeSampleFiles(['typeVar8.py']);
 
-    TestUtils.validateResults(analysisResults, 2);
+    TestUtils.validateResults(analysisResults, 4);
 });
 
 test('TypeVar9', () => {
@@ -1217,7 +1217,7 @@ test('Annotated1', () => {
 
     configOptions.defaultPythonVersion = PythonVersion.V3_8;
     const analysisResults38 = TestUtils.typeAnalyzeSampleFiles(['annotated1.py'], configOptions);
-    TestUtils.validateResults(analysisResults38, 5);
+    TestUtils.validateResults(analysisResults38, 6);
 
     configOptions.defaultPythonVersion = PythonVersion.V3_11;
     const analysisResults39 = TestUtils.typeAnalyzeSampleFiles(['annotated1.py'], configOptions);
